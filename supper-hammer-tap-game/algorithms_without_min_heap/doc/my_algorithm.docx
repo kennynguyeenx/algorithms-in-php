@@ -1,0 +1,49 @@
+﻿Bài toán:
+ - Bài toán có thể được mô hình hóa thành một tập SHT(R, P) 
+  + với R=(r1, r2, ..., rn) là tập thời gian xuất hiện của các animals 
+  + và P=(p1, p2, ..., pn) là tập độ dài tương ứng của các animals
+ - Ta gọi SOLUTION=(s1,s2, ..sm) là lời giải cho bài toán với m là thời điểm mà toàn bộ animal bị thịt và si là lựa chọn trong tập (relax hay tap một trong các animal nổi lên) (i: 1 -> m)
+ - Mỗi khi thời gian tăng lên một ta lại phải lựa chọn một hành động trong tập (relax hay tap một trong các animal nổi lên)
+ - Và sau mỗi lần lựa chọn đó bài toán ban đầu trở thành bài toán con nhỏ hơn SHTt(Rt,Pt) 
+  + với Rt=(r1t, r2t, ..., rnt) là tập thời gian xuất hiện của các animals với rit = (ri - t) > 0 ? ri - t : 0 (i: 1 -> n)
+  + và Pt=(p1t, p2t, ..., pnt) là tập độ dài tương ứng của các animals với pit = (nếu thời điểm t tap ai) ? pi - 1 : pi (i: 1 -> n)
+  + tất nhiên khi pit = 0 nghĩa là không phải tap nữa nên sẽ ko có chuyện pit âm
+  + thuật toán kết thúc khi tất cả các pi đều bằng 0 
+=> Dễ thấy bài toán này có cấu trúc tối ưu. Vì nếu ở một thời điểm t ta tìm được một lời giải SOLUTIONt' khác SOLUTIONt là lời giải cho bài toán con t thì ta chỉ việc kết hợp nó với các lựa chọn trước đó s1, s2, ..., si (i < t - 1) ta sẽ được một SOLUTION' mới tối ưu hơn. Điều này là mâu thuẫn với việc ta giả thiết SOLUTION là lời giản tối ưu.
+ - Ta gọi N=(n1, n2, ..., nn) là tập tuổi thọ của các animals hay là số lần cần tap để animal đó biến mất hoàn toàn
+=> Dễ thấy nếu ở mỗi lần phải lựa chọn hành động (trừ những lần relax do không có animal nào nổi lên) thì nếu ta chọn tap animal có ni (i: 1 -> n) nhỏ nhất thì ta sẽ có được lời giải tối ưu, đây chính là lựa chọn tham lam mà ta sẽ thực hiện (điều này dễ dàng chứng minh bằng biến đổi toán học)
+
+Như vậy giải thuật đưa ra sẽ là:
+algorithm (R, P) {
+    sum = 0;
+    SOLUTION = [];
+    N = P;
+    time = 1;
+    sort(N);
+
+    while(count(N)) {
+	  SOLUTION[time] = 0;
+        foreach (N as key => value) {
+            if (time >= R[key]) {
+                SOLUTION[time] = key;
+                needTap = value - 1;
+                if (needTap == 0) {
+                    sum += time;
+                    unset(N[key]);
+                } else {
+                    N[key] = needTap;
+                }
+                sort(N);
+                break;
+            }
+        }
+
+        time++;
+    }
+
+    return [sum, SOLUTION];
+}
+- Độ phức tạp thuật toán là O(mnlog(n))
+trong đó m là số lần phải chạy vòng lặp while, cũng chính là thời điểm mà mọi animals biến mất hoàn toàn, n là số animals
+- Có thể sử dụng min-queue-priority với min-heap để làm tăng tốc độ thuật toán.
+    

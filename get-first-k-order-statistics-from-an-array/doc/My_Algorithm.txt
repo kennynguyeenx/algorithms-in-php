@@ -1,0 +1,7 @@
+MY_ALGORITHM(A, k)
+    BUILD-MIN-HEAP(A)
+    for i ← length[A] downto length[A] - k + 1
+        do exchange A[1] ↔ A[i]
+        heap-size[A] ← heap-size[A] − 1
+        MIN-HEAPIFY(A, 1)
+    return [A[length[A]], ..., A[length[A] - k]
